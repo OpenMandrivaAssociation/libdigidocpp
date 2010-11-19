@@ -1,5 +1,5 @@
 %define version 0.3.0
-%define rel 1
+%define rel 2
 %define release %mkrel %rel
 %define name libdigidocpp
 %define modname digidoc
@@ -25,7 +25,6 @@ BuildRequires:	libp11-devel
 BuildRequires:	openssl-devel
 BuildRequires:	xml-security-c-devel
 BuildRequires:	xsd-devel
-Requires:	%{_lib}digidoc2
 Requires:	opensc
 
 %description
@@ -99,17 +98,12 @@ The php-%{modname} package provides access to
 %setup -q
 
 %build
-mkdir -p %{_target_platform}
-pushd %{_target_platform}
-%{cmake} ../..
-popd
-
-%make -C %{_target_platform}/build
-
+%cmake
+%make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall_std -C %{_target_platform}/build
+%makeinstall_std -C build
 mv $RPM_BUILD_ROOT/etc/php.d/digidoc.ini $RPM_BUILD_ROOT/etc/php.d/90_digidoc.ini
 
 
