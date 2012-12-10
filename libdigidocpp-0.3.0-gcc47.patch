@@ -1,0 +1,12 @@
+diff -Naur libdigidocpp-0.3.0.orig/src/XmlConf.cpp libdigidocpp-0.3.0/src/XmlConf.cpp
+--- libdigidocpp-0.3.0.orig/src/XmlConf.cpp	2010-03-25 13:09:55.000000000 +0100
++++ libdigidocpp-0.3.0/src/XmlConf.cpp	2012-01-19 05:49:52.744886310 +0100
+@@ -27,6 +27,8 @@
+ #include <fstream>
+ #include <stdio.h>
+ 
++#include <unistd.h>
++
+ #ifdef _WIN32
+ #include <windows.h>
+ #include <Winreg.h>
