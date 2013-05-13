@@ -16,8 +16,8 @@ Source:		http://esteid.googlecode.com/files/%{name}-%{version}.tar.bz2
 Patch0:		libdigidocpp-0.3.0-gcc47.patch
 
 BuildRequires:	cmake
-BuildRequires:	libdigidoc-devel
-BuildRequires:	libp11-devel
+BuildRequires:	pkgconfig(libdigidoc)
+BuildRequires:	pkgconfig(libp11)
 BuildRequires:	openssl-devel
 BuildRequires:	xml-security-c-devel
 BuildRequires:	xsd-devel
