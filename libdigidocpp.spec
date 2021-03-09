@@ -15,9 +15,10 @@ URL:		https://github.com/open-eid/libdigidocpp
 Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
 
 BuildRequires:	cmake
-BuildRequires:	pkgconfig(libdigidoc)
+BuildRequires:	pkgconfig(libxml-2.0)
+BuildRequires:	pkgconfig(openssl)
+BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libp11)
-BuildRequires:	openssl-devel
 BuildRequires:	xml-security-c-devel
 BuildRequires:	xsd-devel
 Requires:	opensc
