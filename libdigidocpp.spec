@@ -5,15 +5,14 @@
 %define develname %mklibname digidocpp -d
 
 Name:		libdigidocpp
-Version:	0.3.0
-Release:	6
+Version:	3.14.5
+Release:	1
 Summary:	Library for creating and validating BDoc and DDoc containers
 
 Group:		System/Libraries
 License:	LGPLv2+
-URL:		http://code.google.com/p/esteid
-Source:		http://esteid.googlecode.com/files/%{name}-%{version}.tar.bz2
-Patch0:		libdigidocpp-0.3.0-gcc47.patch
+URL:		https://github.com/open-eid/libdigidocpp
+Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
 
 BuildRequires:	cmake
 BuildRequires:	pkgconfig(libdigidoc)
