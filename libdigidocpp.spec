@@ -67,19 +67,6 @@ developing applications that use %{name}.
 %install
 %make_install -C build
 
-
-%post -n php-%{modname}
-if [ -f /var/lock/subsys/httpd ]; then
-    %{_initrddir}/httpd restart >/dev/null || :
-fi
-
-%postun -n php-%{modname}
-if [ "$1" = "0" ]; then
-    if [ -f /var/lock/subsys/httpd ]; then
-        %{_initrddir}/httpd restart >/dev/null || :
-    fi
-fi
-
 %files
 %{_bindri}/digidoc-tool
 %{_sysconfdir}/digidocpp/schema
