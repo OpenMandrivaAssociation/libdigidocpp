@@ -68,7 +68,7 @@ developing applications that use %{name}.
 %make_install -C build
 
 %files
-%{_bindri}/digidoc-tool
+%{_bindir}/digidoc-tool
 %{_sysconfdir}/digidocpp/schema
 %{_sysconfdir}/digidocpp/798.p12
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/digidocpp/digidocpp.conf
