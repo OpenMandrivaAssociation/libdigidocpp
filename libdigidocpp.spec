@@ -132,7 +132,7 @@ fi
 #{perl_vendorlib}/digidoc.pm
 
 %files -n python-%{modname}
-%{py_platsitedir}/*
+#{py_platsitedir}/*
 
 %files -n php-%{modname}
 %{_datadir}/php/*
