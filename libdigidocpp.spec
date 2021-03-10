@@ -128,8 +128,8 @@ fi
 %{_libdir}/*.so
 
 %files -n perl-%{modname}
-%{perl_vendorarch}/auto/digidoc.so
-%{perl_vendorlib}/digidoc.pm
+#{perl_vendorarch}/auto/digidoc.so
+#{perl_vendorlib}/digidoc.pm
 
 %files -n python-%{modname}
 %{py_platsitedir}/*
