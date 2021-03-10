@@ -3,7 +3,7 @@
 
 %define modname digidoc
 
-%define major 0
+%define major 1
 %define libname %mklibname digidocpp %{major}
 %define develname %mklibname digidocpp -d
 
