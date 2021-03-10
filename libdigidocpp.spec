@@ -19,7 +19,7 @@ BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libp11)
-BuildRequires:	xml-security-c-devel
+BuildRequires:	pkgconfig(xml-security-c)
 BuildRequires:	xsd-devel
 Requires:	opensc
 
@@ -42,10 +42,9 @@ used for storing legally binding digital signatures.
 Summary:	Development files for %{name}
 Group:		Development/C++
 Requires:	%{libname} = %{version}-%{release}
-Requires:	libdigidoc-devel
-Requires:	libp11-devel
-Requires:	openssl-devel
-Requires:	xml-security-c-devel
+Requires:	pkgconfig(libp11)
+Requires:	pkgconfig(openssl)
+Requires:	pkgconfig(xml-security-c)
 Requires:	xsd-devel
 Provides:	%{name}-devel = %{version}-%{release}
 
@@ -88,14 +87,14 @@ The php-%{modname} package provides access to
 
 %prep
 %setup -q
-%patch0 -p1
+%autopatch -p1
 
 %build
 %cmake
-%make
+%make_build
 
 %install
-%makeinstall_std -C build
+%make_install -C build
 mv %{buildroot}%{_sysconfdir}/php.d/digidoc.ini %{buildroot}%{_sysconfdir}/php.d/90_digidoc.ini
 
 
