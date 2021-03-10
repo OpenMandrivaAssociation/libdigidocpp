@@ -15,6 +15,7 @@ URL:		https://github.com/open-eid/libdigidocpp
 Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
 
 BuildRequires:	cmake
+BuildRequires:  vim-common
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
