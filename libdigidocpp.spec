@@ -115,7 +115,7 @@ if [ "$1" = "0" ]; then
 fi
 
 %files
-%{_sysconfdir}/digidocpp/certs
+#{_sysconfdir}/digidocpp/certs
 %{_sysconfdir}/digidocpp/schema
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/digidocpp/digidocpp.conf
 
