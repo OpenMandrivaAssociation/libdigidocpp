@@ -56,39 +56,6 @@ Provides:	%{name}-devel = %{version}-%{release}
 This package contains libraries and header files for
 developing applications that use %{name}.
 
-%package	-n perl-%{modname}
-Summary:	Perl bindings for %{name}
-Group:		Development/Perl
-BuildRequires:	perl-devel
-BuildRequires:	swig
-Requires:	%{libname} = %{version}-%{release}
-
-%description	-n perl-%{modname}
-The perl-%{modname} package provides access to
-%{name} features from Perl programs.
-
-%package	-n python-%{modname}
-Summary:	Python bindings for %{name}
-Group:		Development/Python
-BuildRequires:	python-devel
-BuildRequires:	swig
-Requires:	%{libname} = %{version}-%{release}
-
-%description	-n python-%{modname}
-The python-%{modname} package provides access to
-%{name} features from Python programs.
-
-%package	-n php-%{modname}
-Summary:	PHP bindings for %{name}
-Group:		Development/PHP
-BuildRequires:	php-devel
-BuildRequires:	swig
-Requires:	%{libname} = %{version}-%{release}
-
-%description	-n php-%{modname}
-The php-%{modname} package provides access to
-%{name} features from PHP programs.
-
 %prep
 %setup -q
 %autopatch -p1
@@ -99,7 +66,6 @@ The php-%{modname} package provides access to
 
 %install
 %make_install -C build
-#mv %{buildroot}%{_sysconfdir}/php.d/digidoc.ini %{buildroot}%{_sysconfdir}/php.d/90_digidoc.ini
 
 
 %post -n php-%{modname}
@@ -115,27 +81,17 @@ if [ "$1" = "0" ]; then
 fi
 
 %files
-#{_sysconfdir}/digidocpp/certs
+%{_bindri}/digidoc-tool
 %{_sysconfdir}/digidocpp/schema
+%{_sysconfdir}/digidocpp/798.p12
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/digidocpp/digidocpp.conf
+%{_mandir}/man1/digidoc-tool.1.*
 
 %files -n %{libname}
 %{_libdir}/*.so.%{major}*
+%{_libdir}/libdigidocpp.so.%{version}
 
 %files -n %{develname}
 %{_includedir}/digidocpp/
 %{_libdir}/pkgconfig/lib*.pc
 %{_libdir}/*.so
-
-%files -n perl-%{modname}
-#{perl_vendorarch}/auto/digidoc.so
-#{perl_vendorlib}/digidoc.pm
-
-%files -n python-%{modname}
-#{py_platsitedir}/*
-
-%files -n php-%{modname}
-#{_datadir}/php/*
-#attr(0755,root,root) %{_libdir}/php/extensions/*
-#config(noreplace) %attr(0644,root,root) %{_sysconfdir}/php.d/90_digidoc.ini
-
