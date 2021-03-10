@@ -135,7 +135,7 @@ fi
 #{py_platsitedir}/*
 
 %files -n php-%{modname}
-%{_datadir}/php/*
-%attr(0755,root,root) %{_libdir}/php/extensions/*
+#{_datadir}/php/*
+#attr(0755,root,root) %{_libdir}/php/extensions/*
 #config(noreplace) %attr(0644,root,root) %{_sysconfdir}/php.d/90_digidoc.ini
 
