@@ -99,7 +99,7 @@ The php-%{modname} package provides access to
 
 %install
 %make_install -C build
-mv %{buildroot}%{_sysconfdir}/php.d/digidoc.ini %{buildroot}%{_sysconfdir}/php.d/90_digidoc.ini
+#mv %{buildroot}%{_sysconfdir}/php.d/digidoc.ini %{buildroot}%{_sysconfdir}/php.d/90_digidoc.ini
 
 
 %post -n php-%{modname}
@@ -137,5 +137,5 @@ fi
 %files -n php-%{modname}
 %{_datadir}/php/*
 %attr(0755,root,root) %{_libdir}/php/extensions/*
-%config(noreplace) %attr(0644,root,root) %{_sysconfdir}/php.d/90_digidoc.ini
+#config(noreplace) %attr(0644,root,root) %{_sysconfdir}/php.d/90_digidoc.ini
 
