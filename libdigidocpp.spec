@@ -8,7 +8,7 @@
 %define develname %mklibname digidocpp -d
 
 Name:		libdigidocpp
-Version:	3.14.5
+Version:	3.14.7
 Release:	1
 Summary:	Library for creating and validating BDoc and DDoc containers
 
