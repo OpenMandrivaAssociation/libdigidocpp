@@ -24,6 +24,7 @@ BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libp11)
 BuildRequires:	pkgconfig(xml-security-c)
+BuildRequires:  pkgconfig(xalan-c)
 BuildRequires:	xsd-devel
 Requires:	opensc
 
