@@ -8,8 +8,8 @@
 %define develname %mklibname digidocpp -d
 
 Name:		libdigidocpp
-Version:	3.14.12
-Release:	2
+Version:	4.1.0
+Release:	1
 Summary:	Library for creating and validating BDoc and DDoc containers
 
 Group:		System/Libraries
@@ -17,7 +17,7 @@ License:	LGPLv2+
 URL:		https://github.com/open-eid/libdigidocpp
 Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
 
-BuildRequires:	cmake
+BuildSystem:	cmake
 BuildRequires:  vim-common
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(openssl)
@@ -27,6 +27,9 @@ BuildRequires:	pkgconfig(xml-security-c)
 BuildRequires:  pkgconfig(xalan-c)
 BuildRequires:	xsd-devel
 Requires:	opensc
+
+%patchlist
+libdigidocpp-compile.patch
 
 %description
 libdigidocpp is a C++ library for reading, validating, and creating BDoc and
@@ -57,29 +60,22 @@ Provides:	%{name}-devel = %{version}-%{release}
 This package contains libraries and header files for
 developing applications that use %{name}.
 
-%prep
-%setup -q
-%autopatch -p1
-
-%build
-%cmake
-%make_build
-
-%install
-%make_install -C build
-
 %files
 %{_bindir}/digidoc-tool
 %{_sysconfdir}/digidocpp/schema
-%{_sysconfdir}/digidocpp/798.p12
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/digidocpp/digidocpp.conf
-%{_mandir}/man1/digidoc-tool.1.*
+%{_mandir}/man1/digidoc-tool.1*
+%{py_sitedir}/digidoc.py
+%{py_sitedir}/_digidoc_python.so
 
 %files -n %{libname}
 %{_libdir}/*.so.%{major}*
 %{_libdir}/libdigidocpp.so.%{version}
 
 %files -n %{develname}
-%{_includedir}/digidocpp/
+%doc %{_docdir}/libdigidocpp
+%{_includedir}/digidocpp
+%{_includedir}/digidocpp_csharp
+%{_includedir}/ee
 %{_libdir}/pkgconfig/lib*.pc
 %{_libdir}/*.so
