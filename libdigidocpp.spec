@@ -83,6 +83,5 @@ developing applications that use %{name}.
 %doc %{_docdir}/libdigidocpp
 %{_includedir}/digidocpp
 %{_includedir}/digidocpp_csharp
-%{_includedir}/ee
 %{_libdir}/pkgconfig/lib*.pc
 %{_libdir}/*.so
