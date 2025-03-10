@@ -26,7 +26,10 @@ BuildRequires:	pkgconfig(libp11)
 BuildRequires:	pkgconfig(xml-security-c)
 BuildRequires:	pkgconfig(xmlsec1-openssl)
 BuildRequires:  pkgconfig(xalan-c)
+BuildRequires:	pkgconfig(minizip)
 BuildRequires:  pkgconfig(python3)
+BuildRequires:	swig
+BuildRequires:	doxygen
 # Implicit dep of xmlsec1-openssl
 BuildRequires:	libltdl-devel
 BuildRequires:	xsd-devel
