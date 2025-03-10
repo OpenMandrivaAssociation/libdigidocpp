@@ -26,6 +26,8 @@ BuildRequires:	pkgconfig(libp11)
 BuildRequires:	pkgconfig(xml-security-c)
 BuildRequires:	pkgconfig(xmlsec1-openssl)
 BuildRequires:  pkgconfig(xalan-c)
+# Implicit dep of xmlsec1-openssl
+BuildRequires:	libltdl-devel
 BuildRequires:	xsd-devel
 Requires:	opensc
 
