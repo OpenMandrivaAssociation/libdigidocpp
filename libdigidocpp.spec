@@ -9,7 +9,7 @@
 
 Name:		libdigidocpp
 Version:	4.1.0
-Release:	1
+Release:	2
 Summary:	Library for creating and validating BDoc and DDoc containers
 
 Group:		System/Libraries
