@@ -8,8 +8,8 @@
 %define develname %mklibname digidocpp -d
 
 Name:		libdigidocpp
-Version:	4.1.0
-Release:	4
+Version:	4.4.0
+Release:	1
 Summary:	Library for creating and validating BDoc and DDoc containers
 
 Group:		System/Libraries
@@ -36,7 +36,7 @@ BuildRequires:	xsd-devel
 Requires:	opensc
 
 %patchlist
-libdigidocpp-compile.patch
+# dropped (no longer applies): libdigidocpp-compile.patch
 
 %description
 libdigidocpp is a C++ library for reading, validating, and creating BDoc and
