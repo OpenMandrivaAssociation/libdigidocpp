@@ -18,26 +18,26 @@ URL:		https://github.com/open-eid/libdigidocpp
 Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
 
 BuildSystem:	cmake
-
-%prep -a
-# clang no longer injects nullptr_t into the global namespace.
-sed -i 's/make_unique_ptr(nullptr_t)/make_unique_ptr(std::nullptr_t)/' src/util/memory.h
-BuildRequires:  vim-common
+BuildRequires:	vim-common
 BuildRequires:	pkgconfig(libxml-2.0)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(libp11)
 BuildRequires:	pkgconfig(xml-security-c)
 BuildRequires:	pkgconfig(xmlsec1-openssl)
-BuildRequires:  pkgconfig(xalan-c)
+BuildRequires:	pkgconfig(xalan-c)
 BuildRequires:	pkgconfig(minizip)
-BuildRequires:  pkgconfig(python3)
+BuildRequires:	pkgconfig(python)
 BuildRequires:	swig
 BuildRequires:	doxygen
 # Implicit dep of xmlsec1-openssl
 BuildRequires:	libltdl-devel
 BuildRequires:	xsd-devel
 Requires:	opensc
+
+%prep -a
+# clang no longer injects nullptr_t into the global namespace.
+sed -i 's/make_unique_ptr(nullptr_t)/make_unique_ptr(std::nullptr_t)/' src/util/memory.h
 
 %patchlist
 # dropped (no longer applies): libdigidocpp-compile.patch
