@@ -1,0 +1,186 @@
+diff --git a/src/SignatureCAdES_B.cpp b/src/SignatureCAdES_B.cpp
+index 59c73c4..4e79fac 100644
+--- a/src/SignatureCAdES_B.cpp
++++ b/src/SignatureCAdES_B.cpp
+@@ -119,10 +119,11 @@ string SignatureCAdES_B::claimedSigningTime() const
+     X509_ATTRIBUTE *attr = CMS_signed_get_attr(d->si, pos);
+     if(!attr)
+         return time;
+-    ASN1_TYPE *type = X509_ATTRIBUTE_get0_type(attr, 0);
++    const ASN1_TYPE *type = X509_ATTRIBUTE_get0_type(attr, 0);
+     if(!type || type->type != V_ASN1_UTCTIME)
+         return time;
+-    time.assign((char*)type->value.utctime->data, size_t(type->value.utctime->length));
++    const ASN1_STRING *utc = type->value.utctime;
++    time.assign(reinterpret_cast<const char *>(ASN1_STRING_get0_data(utc)), size_t(ASN1_STRING_length(utc)));
+     return (time.compare(0, 2, "50") <= 0 ? "20" : "19") + time;
+ }
+ 
+diff --git a/src/SignatureCAdES_T.cpp b/src/SignatureCAdES_T.cpp
+index e62ccba..213181a 100644
+--- a/src/SignatureCAdES_T.cpp
++++ b/src/SignatureCAdES_T.cpp
+@@ -35,9 +35,9 @@ void SignatureCAdES_T::extendSignatureProfile(const string &profile)
+ {
+     if(profile != "PAdES_BASELINE_T")
+         return;
+-    ASN1_OCTET_STRING *signature = CMS_SignerInfo_get0_signature(d->si);
++    const ASN1_OCTET_STRING *signature = CMS_SignerInfo_get0_signature(d->si);
+     Digest digest;
+-    digest.update(signature->data, size_t(signature->length));
++    digest.update(ASN1_STRING_get0_data(signature), size_t(ASN1_STRING_length(signature)));
+     vector<unsigned char> tsa = TS(CONF(TSUrl), digest);
+     if(tsa.empty())
+         THROW("Failed to add TimeStamp info");
+@@ -62,10 +62,11 @@ TS SignatureCAdES_T::ts() const
+     X509_ATTRIBUTE *attr = CMS_unsigned_get_attr(d->si, pos);
+     if(!attr)
+         return TS(nullptr, 0);
+-    ASN1_TYPE *type = X509_ATTRIBUTE_get0_type(attr, 0);
++    const ASN1_TYPE *type = X509_ATTRIBUTE_get0_type(attr, 0);
+     if(!type || type->type != V_ASN1_SEQUENCE)
+         return TS(nullptr, 0);
+-    return TS(type->value.sequence->data, size_t(type->value.sequence->length));
++    const ASN1_STRING *seq = type->value.sequence;
++    return TS(ASN1_STRING_get0_data(seq), size_t(ASN1_STRING_length(seq)));
+ }
+ 
+ void SignatureCAdES_T::validate(const std::string &policy) const
+@@ -79,9 +80,9 @@ void SignatureCAdES_T::validate(const std::string &policy) const
+     }
+ 
+     try {
+-        ASN1_OCTET_STRING *signature = CMS_SignerInfo_get0_signature(d->si);
++        const ASN1_OCTET_STRING *signature = CMS_SignerInfo_get0_signature(d->si);
+         Digest digest;
+-        digest.update(signature->data, size_t(signature->length));
++        digest.update(ASN1_STRING_get0_data(signature), size_t(ASN1_STRING_length(signature)));
+         ts().verify(digest);
+     } catch(const Exception &e) {
+         exception.addCause(e);
+diff --git a/src/crypto/Digest.cpp b/src/crypto/Digest.cpp
+index 4a61d6d..70e8e60 100644
+--- a/src/crypto/Digest.cpp
++++ b/src/crypto/Digest.cpp
+@@ -54,7 +54,8 @@ vector<unsigned char> Digest::digestInfoDigest(const std::vector<unsigned char>
+         return {};
+     const ASN1_OCTET_STRING *value {};
+     X509_SIG_get0(sig.get(), nullptr, &value);
+-    return { value->data, std::next(value->data, value->length) };
++    const unsigned char *octets = ASN1_STRING_get0_data(value);
++    return { octets, std::next(octets, ASN1_STRING_length(value)) };
+ }
+ 
+ string Digest::digestInfoUri(const std::vector<unsigned char> &digest)
+@@ -64,7 +65,9 @@ string Digest::digestInfoUri(const std::vector<unsigned char> &digest)
+         return {};
+     const X509_ALGOR *algor {};
+     X509_SIG_get0(sig.get(), &algor, nullptr);
+-    return toUri(OBJ_obj2nid(algor->algorithm));
++    const ASN1_OBJECT *oid = nullptr;
++    X509_ALGOR_get0(&oid, nullptr, nullptr, algor);
++    return toUri(OBJ_obj2nid(oid));
+ }
+ 
+ /**
+diff --git a/src/crypto/OCSP.cpp b/src/crypto/OCSP.cpp
+index 8626205..34a2268 100644
+--- a/src/crypto/OCSP.cpp
++++ b/src/crypto/OCSP.cpp
+@@ -149,9 +149,11 @@ bool OCSP::compareResponderCert(const X509Cert &cert) const
+     if(hash)
+     {
+         std::array<unsigned char,SHA_DIGEST_LENGTH> sha1{};
+-        ASN1_BIT_STRING *key = X509_get0_pubkey_bitstr(cert.handle());
+-        SHA1(key->data, size_t(key->length), sha1.data());
+-        if(!equal(sha1.cbegin(), sha1.cend(), hash->data, std::next(hash->data, hash->length)))
++        const ASN1_BIT_STRING *key = X509_get0_pubkey_bitstr(cert.handle());
++        const unsigned char *keydata = ASN1_STRING_get0_data(key);
++        SHA1(keydata, size_t(ASN1_STRING_length(key)), sha1.data());
++        const unsigned char *hashdata = ASN1_STRING_get0_data(hash);
++        if(!equal(sha1.cbegin(), sha1.cend(), hashdata, std::next(hashdata, ASN1_STRING_length(hash))))
+             return false;
+     }
+     else if(X509_NAME_cmp(X509_get_subject_name(cert.handle()), name) != 0)
+@@ -273,12 +275,13 @@ vector<unsigned char> OCSP::nonce() const
+     int resp_idx = OCSP_BASICRESP_get_ext_by_NID(basic.get(), NID_id_pkix_OCSP_Nonce, -1);
+     if(resp_idx < 0)
+         return nonce;
+-    X509_EXTENSION *ext = OCSP_BASICRESP_get_ext(basic.get(), resp_idx);
++    const X509_EXTENSION *ext = OCSP_BASICRESP_get_ext(basic.get(), resp_idx);
+     if(!ext)
+         return nonce;
+ 
+-    ASN1_OCTET_STRING *value = X509_EXTENSION_get_data(ext);
+-    nonce.assign(value->data, std::next(value->data, value->length));
++    const ASN1_OCTET_STRING *value = X509_EXTENSION_get_data(ext);
++    const unsigned char *octets = ASN1_STRING_get0_data(value);
++    nonce.assign(octets, std::next(octets, ASN1_STRING_length(value)));
+     //OpenSSL OCSP created messages NID_id_pkix_OCSP_Nonce field is DER encoded twice, not a problem with java impl
+     //XXX: UglyHackTM check if nonceAsn1 contains ASN1_OCTET_STRING
+     //XXX: if first 2 bytes seem to be beginning of DER ASN1_OCTET_STRING then remove them
+diff --git a/src/crypto/TS.cpp b/src/crypto/TS.cpp
+index d96dfc9..0922973 100644
+--- a/src/crypto/TS.cpp
++++ b/src/crypto/TS.cpp
+@@ -87,9 +87,12 @@ TS::TS(const Digest &digest, const std::string &userAgent)
+ #endif
+ 
+     auto nonce = make_unique_ptr<ASN1_INTEGER_free>(ASN1_INTEGER_new());
+-    ASN1_STRING_set(nonce.get(), nullptr, 20);
+-    for(nonce->data[0] = 0; nonce->data[0] == 0;) // Make sure that first byte is not 0x00
+-        RAND_bytes(nonce->data, nonce->length);
++    // OpenSSL 3 made ASN1_STRING opaque. Fill a buffer, then copy it in.
++    unsigned char rnd[20] = {};
++    do
++        RAND_bytes(rnd, sizeof(rnd));
++    while(rnd[0] == 0); // Make sure that first byte is not 0x00
++    ASN1_STRING_set(nonce.get(), rnd, int(sizeof(rnd)));
+     TS_REQ_set_nonce(req.get(), nonce.get());
+ 
+     Connect::Result result = Connect(CONF(TSUrl), "POST", 0, CONF(TSCerts), userAgent).exec({
+diff --git a/src/crypto/X509Cert.cpp b/src/crypto/X509Cert.cpp
+index f8c47b4..dc397d2 100644
+--- a/src/crypto/X509Cert.cpp
++++ b/src/crypto/X509Cert.cpp
+@@ -424,7 +424,7 @@ vector<string> X509Cert::qcStatements() const
+     int pos = X509_get_ext_by_NID(cert.get(), NID_qcStatements, -1);
+     if(pos == -1)
+         return result;
+-    X509_EXTENSION *ext = X509_get_ext(cert.get(), pos);
++    const X509_EXTENSION *ext = X509_get_ext(cert.get(), pos);
+     auto qc = make_unique_cast<QCStatements_free>(ASN1_item_unpack(X509_EXTENSION_get_data(ext), ASN1_ITEM_rptr(QCStatements)));
+     if(!qc)
+         return result;
+@@ -492,7 +492,7 @@ string X509Cert::toString(const string &obj) const
+     string str;
+     if(!cert)
+         return str;
+-    X509_NAME* name = Func(cert.get());
++    const X509_NAME *name = Func(cert.get());
+     if(!name)
+         THROW_OPENSSLEXCEPTION("Failed to convert X.509 certificate name");
+ 
+@@ -500,7 +500,7 @@ string X509Cert::toString(const string &obj) const
+     {
+         for(int i = 0; i < X509_NAME_entry_count(name); ++i)
+         {
+-            X509_NAME_ENTRY *e = X509_NAME_get_entry(name, i);
++            const X509_NAME_ENTRY *e = X509_NAME_get_entry(name, i);
+             if(obj != OBJ_nid2sn(OBJ_obj2nid(X509_NAME_ENTRY_get_object(e))))
+                 continue;
+ 
+diff --git a/src/crypto/X509CertStore.cpp b/src/crypto/X509CertStore.cpp
+index fba1ffe..4ce26fe 100644
+--- a/src/crypto/X509CertStore.cpp
++++ b/src/crypto/X509CertStore.cpp
+@@ -119,7 +119,8 @@ X509Cert X509CertStore::issuerFromAIA(const X509Cert &cert)
+         if(ACCESS_DESCRIPTION *ad = sk_ACCESS_DESCRIPTION_value(aia.get(), i);
+             ad->location->type == GEN_URI &&
+             OBJ_obj2nid(ad->method) == NID_ad_ca_issuers)
+-            url.assign((const char*)ad->location->d.uniformResourceIdentifier->data, ad->location->d.uniformResourceIdentifier->length);
++            const ASN1_IA5STRING *uri = ad->location->d.uniformResourceIdentifier;
++            url.assign(reinterpret_cast<const char *>(ASN1_STRING_get0_data(uri)), size_t(ASN1_STRING_length(uri)));
+     }
+     if(url.empty())
+         return X509Cert();

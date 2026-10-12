@@ -16,6 +16,7 @@ Group:		System/Libraries
 License:	LGPLv2+
 URL:		https://github.com/open-eid/libdigidocpp
 Source:		https://github.com/open-eid/libdigidocpp/releases/download/v%{version}/libdigidocpp-%{version}.tar.gz
+Patch0:		libdigidocpp-openssl-4.patch
 
 BuildSystem:	cmake
 BuildRequires:	vim-common
@@ -36,6 +37,8 @@ BuildRequires:	xsd-devel
 Requires:	opensc
 
 %prep -a
+# OpenSSL 4 hides the ASN.1 structures. Use the accessor functions.
+%patch 0 -p1
 # clang no longer injects nullptr_t into the global namespace.
 sed -i 's/make_unique_ptr(nullptr_t)/make_unique_ptr(std::nullptr_t)/' src/util/memory.h
 
