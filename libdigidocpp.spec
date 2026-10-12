@@ -93,3 +93,4 @@ developing applications that use %{name}.
 %{_includedir}/digidocpp_csharp
 %{_libdir}/pkgconfig/lib*.pc
 %{_libdir}/*.so
+%{_libdir}/cmake/libdigidocpp/
