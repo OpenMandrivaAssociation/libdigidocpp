@@ -174,13 +174,35 @@ diff --git a/src/crypto/X509CertStore.cpp b/src/crypto/X509CertStore.cpp
 index fba1ffe..4ce26fe 100644
 --- a/src/crypto/X509CertStore.cpp
 +++ b/src/crypto/X509CertStore.cpp
-@@ -119,7 +119,8 @@ X509Cert X509CertStore::issuerFromAIA(const X509Cert &cert)
+@@ -119,7 +119,10 @@ X509Cert X509CertStore::issuerFromAIA(const X509Cert &cert)
          if(ACCESS_DESCRIPTION *ad = sk_ACCESS_DESCRIPTION_value(aia.get(), i);
              ad->location->type == GEN_URI &&
              OBJ_obj2nid(ad->method) == NID_ad_ca_issuers)
 -            url.assign((const char*)ad->location->d.uniformResourceIdentifier->data, ad->location->d.uniformResourceIdentifier->length);
++        {
 +            const ASN1_IA5STRING *uri = ad->location->d.uniformResourceIdentifier;
 +            url.assign(reinterpret_cast<const char *>(ASN1_STRING_get0_data(uri)), size_t(ASN1_STRING_length(uri)));
++        }
      }
      if(url.empty())
          return X509Cert();
+diff --git a/src/crypto/X509Crypto.cpp b/src/crypto/X509Crypto.cpp
+--- a/src/crypto/X509Crypto.cpp
++++ b/src/crypto/X509Crypto.cpp
+@@ -126,7 +126,7 @@
+         }
+     }
+ 
+-    X509_NAME *issuer = X509_get_issuer_name(cert.handle());
++    const X509_NAME *issuer = X509_get_issuer_name(cert.handle());
+     for(const auto &[key, val]: data)
+     {
+         auto obj = find(list.cbegin(), list.cend(), key);
+@@ -157,7 +157,7 @@
+         bool found = false;
+         for(int i = 0; i < X509_NAME_entry_count(issuer); ++i)
+         {
+-            X509_NAME_ENTRY *entb = X509_NAME_get_entry(issuer, i);
++            const X509_NAME_ENTRY *entb = X509_NAME_get_entry(issuer, i);
+             if(OBJ_cmp(obja, X509_NAME_ENTRY_get_object(entb)) != 0)
+                 continue;
