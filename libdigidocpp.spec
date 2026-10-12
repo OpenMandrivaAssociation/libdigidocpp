@@ -40,6 +40,8 @@ Requires:	opensc
 # Patch0 is applied by cmake prep. OpenSSL 4 hides the ASN.1 structures.
 # clang no longer injects nullptr_t into the global namespace.
 sed -i 's/make_unique_ptr(nullptr_t)/make_unique_ptr(std::nullptr_t)/' src/util/memory.h
+# The SWIG typemap still calls the Python 2 string API. Bytes are enough.
+sed -i '/PyString_Check/,+2d' libdigidocpp.i
 
 %patchlist
 # dropped (no longer applies): libdigidocpp-compile.patch
