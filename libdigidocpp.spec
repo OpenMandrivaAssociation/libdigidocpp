@@ -37,8 +37,7 @@ BuildRequires:	xsd-devel
 Requires:	opensc
 
 %prep -a
-# OpenSSL 4 hides the ASN.1 structures. Use the accessor functions.
-%patch 0 -p1
+# Patch0 is applied by cmake prep. OpenSSL 4 hides the ASN.1 structures.
 # clang no longer injects nullptr_t into the global namespace.
 sed -i 's/make_unique_ptr(nullptr_t)/make_unique_ptr(std::nullptr_t)/' src/util/memory.h
 
